@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     kotlin("jvm") version libs.versions.core.kotlin.get()
     kotlin("plugin.serialization") version libs.versions.core.kotlin.get()
@@ -9,6 +11,25 @@ version = "0.0.1"
 
 application {
     mainClass.set("com.ougi.callme.ApplicationKt")
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_20
+    targetCompatibility = JavaVersion.VERSION_20
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_20)
+    }
+}
+
+ktor {
+    docker {
+        jreVersion.set(JavaVersion.VERSION_20)
+        localImageName.set("callme-auth-image")
+        imageTag.set(version.toString())
+    }
 }
 
 repositories {
