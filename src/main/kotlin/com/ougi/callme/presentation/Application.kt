@@ -14,7 +14,7 @@ import org.koin.ktor.plugin.Koin
 fun main() {
     embeddedServer(
         factory = Netty,
-        port = 8080,
+        port = 80,
         module = Application::module,
     )
         .start(wait = true)
