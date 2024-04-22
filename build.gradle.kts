@@ -14,21 +14,13 @@ application {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_20
-    targetCompatibility = JavaVersion.VERSION_20
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 kotlin {
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_20)
-    }
-}
-
-ktor {
-    docker {
-        jreVersion.set(JavaVersion.VERSION_20)
-        localImageName.set("callme-auth-image")
-        imageTag.set(version.toString())
+        jvmTarget.set(JvmTarget.JVM_21)
     }
 }
 
