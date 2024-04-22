@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version libs.versions.core.kotlin.get()
+    kotlin("plugin.serialization") version libs.versions.core.kotlin.get()
     id("io.ktor.plugin") version libs.versions.core.ktor.get()
 }
 
@@ -20,5 +21,9 @@ dependencies {
     implementation(libs.ktor.auth.jvm)
     implementation(libs.ktor.auth.jwt.jvm)
     implementation(libs.ktor.netty.jvm)
-    implementation(libs.netty.logback)
+    implementation(libs.ktor.content.negotiation)
+    implementation(libs.ktor.serialization.json)
+    implementation(libs.ktor.client.java)
+
+    implementation(libs.koin)
 }
