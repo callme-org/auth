@@ -10,7 +10,7 @@ group = "com.ougi.callme"
 version = "0.0.1"
 
 application {
-    mainClass.set("com.ougi.callme.ApplicationKt")
+    mainClass.set("com.ougi.callme.presentation.ApplicationKt")
 }
 
 java {
