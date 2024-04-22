@@ -1,0 +1,17 @@
+[versions]
+core-kotlin = "1.9.23"
+core-ktor = "2.3.10"
+
+netty-logback = "1.4.14"
+
+[libraries]
+
+#ktor
+ktor-core-jvm = { module = "io.ktor:ktor-server-core-jvm" }
+ktor-openapi = { module = "io.ktor:ktor-server-openapi" }
+ktor-auth-jvm = { module = "io.ktor:ktor-server-auth-jvm" }
+ktor-auth-jwt-jvm = { module = "io.ktor:ktor-server-auth-jwt-jvm" }
+ktor-netty-jvm = { module = "io.ktor:ktor-server-netty-jvm" }
+
+#netty
+netty-logback = { module = "ch.qos.logback:logback-classic", version.ref = "netty-logback" }
