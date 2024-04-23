@@ -38,7 +38,7 @@ fun Routing.authenticate() {
             handle {
                 URLBuilder().takeFrom(call.request.uri)
                     //перенаправляем на другой порт
-                    .apply { port = 8081 }
+                    .apply { port = 81 }
                     .build()
                     .let { newUrl ->
                         httpClient.request(newUrl) {
