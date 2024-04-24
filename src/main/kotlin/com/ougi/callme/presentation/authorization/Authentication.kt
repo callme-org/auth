@@ -5,14 +5,10 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.ougi.callme.domain.model.JwtConfig
 import com.ougi.callme.domain.usecase.JwtConfigUseCase
 import com.ougi.callme.presentation.authorization.ParamsConstants.LOGIN_PARAM_NAME
-import io.ktor.client.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
-import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
@@ -32,18 +28,9 @@ fun Application.configureAuthentication() {
 }
 
 fun Routing.authenticate() {
-    val httpClient by inject<HttpClient>()
     authenticate("auth-jwt") {
-        route("/{...}") {
-            handle {
-                httpClient.request("http://" + System.getenv("INTERNAL_NETWORK") + call.request.uri) {
-                    method = call.request.httpMethod
-                    headers.appendAll(call.request.headers)
-                    parameters { call.parameters.forEach(::appendAll) }
-                    setBody(call.receiveText())
-                }
-                    .run { this@handle.call.respond(status, readBytes()) }
-            }
+        get("/authenticate") {
+            call.respond(HttpStatusCode.OK, "Authenticated")
         }
     }
 }
