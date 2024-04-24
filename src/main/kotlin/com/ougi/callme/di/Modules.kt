@@ -27,13 +27,7 @@ private val useCasesModule = module {
 }
 
 private val presentationModule = module {
-    single {
-        HttpClient(Java) {
-            engine {
-                proxy = ProxyBuilder.http(System.getenv("INTERNAL_NETWORK"))
-            }
-        }
-    }
+    single { HttpClient(Java) }
 }
 
 fun createEnvironmentModule(applicationConfig: ApplicationConfig) =
