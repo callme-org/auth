@@ -30,7 +30,7 @@ private val presentationModule = module {
     single {
         HttpClient(Java) {
             engine {
-                proxy = ProxyBuilder.http("${System.getenv("INTERNAL_NETWORK")}:80")
+                proxy = ProxyBuilder.http(System.getenv("INTERNAL_NETWORK"))
             }
         }
     }
