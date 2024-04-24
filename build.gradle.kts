@@ -38,5 +38,6 @@ dependencies {
     implementation(libs.ktor.serialization.json)
     implementation(libs.ktor.client.java)
 
+    implementation("ch.qos.logback:logback-classic:1.5.6")
     implementation(libs.koin)
 }
