@@ -27,13 +27,16 @@ fun Application.configureAuthentication() {
     }
 }
 
-fun Route.authenticate() {
+fun Route.authenticate() =
     authenticate("auth-jwt") {
         get("/authenticate") {
-            call.respond(HttpStatusCode.OK, "Authenticated")
+            call.respond(
+                status = HttpStatusCode.OK,
+                message = "Authenticated"
+            )
         }
     }
-}
+
 
 private fun JWTAuthenticationProvider.Config.verify(jwtConfig: JwtConfig) =
     verifier(
@@ -59,7 +62,7 @@ private fun JWTAuthenticationProvider.Config.validate() =
 private fun JWTAuthenticationProvider.Config.challenge() =
     challenge { _, _ ->
         call.respond(
-            HttpStatusCode.Unauthorized,
-            "Token is not valid or has expired"
+            status = HttpStatusCode.Unauthorized,
+            message = "Token is not valid or has expired"
         )
     }

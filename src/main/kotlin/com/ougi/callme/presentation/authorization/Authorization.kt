@@ -31,7 +31,10 @@ fun Route.login() {
 
         //TODO подлкючить к otp cервису
         if (userAuthData.otpMd5 != "1234".toMd5Hex()) {
-            call.respond(HttpStatusCode.Forbidden, "Invalid or expired otp")
+            call.respond(
+                status = HttpStatusCode.Forbidden,
+                message = "Invalid or expired otp",
+            )
             return@post
         }
 
