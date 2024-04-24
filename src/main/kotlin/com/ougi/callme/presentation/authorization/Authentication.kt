@@ -36,18 +36,12 @@ fun Routing.authenticate() {
     authenticate("auth-jwt") {
         route("/{...}") {
             handle {
-                URLBuilder().takeFrom(call.request.uri)
-                    //перенаправляем на другой порт
-                    .apply { port = 81 }
-                    .build()
-                    .let { newUrl ->
-                        httpClient.request(newUrl) {
-                            method = call.request.httpMethod
-                            headers.appendAll(call.request.headers)
-                            parameters { call.parameters.forEach(::appendAll) }
-                            setBody(call.receiveText())
-                        }
-                    }
+                httpClient.request(call.request.uri) {
+                    method = call.request.httpMethod
+                    headers.appendAll(call.request.headers)
+                    parameters { call.parameters.forEach(::appendAll) }
+                    setBody(call.receiveText())
+                }
                     .run { this@handle.call.respond(status, readBytes()) }
             }
         }

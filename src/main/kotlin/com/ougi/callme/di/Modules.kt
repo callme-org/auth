@@ -8,6 +8,7 @@ import com.ougi.callme.domain.repository.KeyRepository
 import com.ougi.callme.domain.usecase.JwtConfigUseCase
 import com.ougi.callme.domain.usecase.JwtConfigUseCaseImpl
 import io.ktor.client.*
+import io.ktor.client.engine.*
 import io.ktor.client.engine.java.*
 import io.ktor.server.application.*
 import io.ktor.server.config.*
@@ -26,7 +27,13 @@ private val useCasesModule = module {
 }
 
 private val presentationModule = module {
-    single { HttpClient(Java) }
+    single {
+        HttpClient(Java) {
+            engine {
+                proxy = ProxyBuilder.http("${System.getenv("INTERNAL_NETWORK")}:80")
+            }
+        }
+    }
 }
 
 fun createEnvironmentModule(applicationConfig: ApplicationConfig) =
