@@ -44,6 +44,7 @@ fun Routing.authenticate() {
                         httpClient.request(newUrl) {
                             method = call.request.httpMethod
                             headers.appendAll(call.request.headers)
+                            parameters { call.parameters.forEach(::appendAll) }
                             setBody(call.receiveText())
                         }
                     }
