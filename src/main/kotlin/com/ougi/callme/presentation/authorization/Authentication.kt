@@ -27,7 +27,7 @@ fun Application.configureAuthentication() {
     }
 }
 
-fun Routing.authenticate() {
+fun Route.authenticate() {
     authenticate("auth-jwt") {
         get("/authenticate") {
             call.respond(HttpStatusCode.OK, "Authenticated")

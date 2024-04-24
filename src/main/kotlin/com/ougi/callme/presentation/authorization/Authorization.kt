@@ -20,13 +20,7 @@ import java.security.interfaces.RSAPublicKey
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-fun Routing.authorization() {
-    route("/auth") {
-        login()
-    }
-}
-
-private fun Route.login() {
+fun Route.login() {
 
     val jwtConfigUseCase by inject<JwtConfigUseCase>()
     val jwtConfig = jwtConfigUseCase.provideJwtConfig()

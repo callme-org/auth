@@ -3,7 +3,7 @@ package com.ougi.callme.presentation
 import com.ougi.callme.di.appModule
 import com.ougi.callme.di.createEnvironmentModule
 import com.ougi.callme.presentation.authorization.configureAuthentication
-import com.ougi.callme.presentation.routing.configureRouting
+import com.ougi.callme.presentation.authorization.configureRouting
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
