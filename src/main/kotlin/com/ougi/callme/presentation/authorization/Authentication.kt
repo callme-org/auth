@@ -36,7 +36,7 @@ fun Routing.authenticate() {
     authenticate("auth-jwt") {
         route("/{...}") {
             handle {
-                httpClient.request("http://" + System.getenv("INTERNAL_NETWORK") + ":8081" + call.request.uri) {
+                httpClient.request("http://" + System.getenv("INTERNAL_NETWORK") + call.request.uri) {
                     method = call.request.httpMethod
                     headers.appendAll(call.request.headers)
                     parameters { call.parameters.forEach(::appendAll) }
