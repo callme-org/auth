@@ -11,7 +11,7 @@ class UserRepositoryImpl(
 ) : UserRepository {
 
     override suspend fun requestUserLogin(login: String) =
-        httpClient.post("http://callme-user:8080/m/user/create") {
+        httpClient.post("http://callme-user:8080/common/user/create") {
             contentType(ContentType.Application.Json)
             setBody(UserLogin(login))
         }
