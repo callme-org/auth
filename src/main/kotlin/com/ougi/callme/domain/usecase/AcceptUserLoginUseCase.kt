@@ -21,7 +21,7 @@ class AcceptUserLoginUseCaseImpl(
             else ->
                 UserLoginResponse.Failure(
                     status = response.status,
-                    message = response.readBytes().decodeToString()
+                    message = response.readBytes()
                 )
         }
     }

@@ -8,7 +8,7 @@ sealed interface UserLoginResponse {
 
     class Failure(
         val status: HttpStatusCode,
-        val message: String,
+        val message: ByteArray,
     ) : UserLoginResponse
 
 }
