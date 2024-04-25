@@ -14,7 +14,8 @@ ktor-openapi = { module = "io.ktor:ktor-server-openapi" }
 ktor-auth-jvm = { module = "io.ktor:ktor-server-auth-jvm" }
 ktor-auth-jwt-jvm = { module = "io.ktor:ktor-server-auth-jwt-jvm" }
 ktor-netty-jvm = { module = "io.ktor:ktor-server-netty-jvm" }
-ktor-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation" }
+ktor-server-negotiation = { module = "io.ktor:ktor-server-content-negotiation" }
+ktor-client-negotiation = { module = "io.ktor:ktor-client-content-negotiation" }
 ktor-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json" }
 ktor-client-java = { module = "io.ktor:ktor-client-java" }
 

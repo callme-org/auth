@@ -34,8 +34,9 @@ dependencies {
     implementation(libs.ktor.auth.jvm)
     implementation(libs.ktor.auth.jwt.jvm)
     implementation(libs.ktor.netty.jvm)
-    implementation(libs.ktor.content.negotiation)
+    implementation(libs.ktor.server.negotiation)
     implementation(libs.ktor.serialization.json)
+    implementation(libs.ktor.client.negotiation)
     implementation(libs.ktor.client.java)
 
     implementation(libs.netty.logback)

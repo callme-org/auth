@@ -10,6 +10,8 @@ import com.ougi.callme.domain.repository.UserRepository
 import com.ougi.callme.domain.usecase.*
 import io.ktor.client.*
 import io.ktor.client.engine.java.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.config.*
 import org.koin.core.module.dsl.bind
@@ -21,7 +23,13 @@ private val repositoriesModule = module {
     singleOf(::KeyRepositoryImpl) { bind<KeyRepository>() }
     singleOf(::JwtConfigRepositoryImpl) { bind<JwtConfigRepository>() }
     singleOf(::UserRepositoryImpl) { bind<UserRepository>() }
-    single { HttpClient(Java) }
+    single {
+        HttpClient(Java) {
+            install(ContentNegotiation) {
+                json()
+            }
+        }
+    }
 }
 
 private val useCasesModule = module {
