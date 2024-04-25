@@ -1,7 +1,9 @@
 package com.ougi.callme.presentation.authorization
 
-import com.ougi.callme.presentation.authorization.model.UserAuthData
+import com.ougi.callme.domain.model.UserLoginResponse
+import com.ougi.callme.domain.usecase.AcceptUserLoginUseCase
 import com.ougi.callme.domain.usecase.GenerateTokenPairUseCase
+import com.ougi.callme.presentation.authorization.model.UserAuthData
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -13,6 +15,7 @@ import java.security.MessageDigest
 fun Route.login() {
 
     val generateTokenPairUseCase by inject<GenerateTokenPairUseCase>()
+    val acceptUserLoginUseCase by inject<AcceptUserLoginUseCase>()
 
     post("/login") {
         val userAuthData = call.receive<UserAuthData>()
@@ -25,10 +28,22 @@ fun Route.login() {
             )
             return@post
         }
-        call.respond(
-            status = HttpStatusCode.OK,
-            message = generateTokenPairUseCase.generateTokenPair(userAuthData.loginMd5)
-        )
+
+        when (val loginResponse = acceptUserLoginUseCase.acceptUserLogin(userAuthData.loginMd5)) {
+            UserLoginResponse.Accepted ->
+                call.respond(
+                    status = HttpStatusCode.OK,
+                    message = generateTokenPairUseCase.generateTokenPair(userAuthData.loginMd5)
+                )
+
+            is UserLoginResponse.Failure ->
+                call.respond(
+                    status = loginResponse.status,
+                    message = loginResponse.message
+                )
+
+        }
+
     }
 }
 
