@@ -5,8 +5,10 @@ import io.ktor.server.routing.*
 
 fun Application.configureRouting() =
     routing {
-        route("/auth") {
-            login()
-            authenticate()
+        route("/open") {
+            route("/auth") {
+                login()
+                authenticate()
+            }
         }
     }
