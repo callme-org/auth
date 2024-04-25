@@ -5,6 +5,6 @@ import java.security.KeyPair
 
 interface JwtConfigRepository {
 
-    fun getJwtConfig(keyPair: KeyPair): JwtConfig
+    fun getJwtConfig(): JwtConfig
 
 }

@@ -6,10 +6,11 @@ import java.security.KeyPairGenerator
 
 class KeyRepositoryImpl : KeyRepository {
 
-    override val keyPair: KeyPair by lazy(LazyThreadSafetyMode.NONE) {
-        KeyPairGenerator.getInstance(RSA_ALGORITHM)
-            .generateKeyPair()
-    }
+    private val keyPairGenerator by lazy { KeyPairGenerator.getInstance(RSA_ALGORITHM) }
+
+    override val accessKeyPair: KeyPair by lazy { keyPairGenerator.generateKeyPair() }
+
+    override val refreshKeyPair: KeyPair by lazy { keyPairGenerator.generateKeyPair() }
 
     private companion object {
         private const val RSA_ALGORITHM = "RSA"

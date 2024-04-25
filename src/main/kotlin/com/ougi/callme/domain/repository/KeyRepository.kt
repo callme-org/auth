@@ -4,6 +4,8 @@ import java.security.KeyPair
 
 interface KeyRepository {
 
-    val keyPair: KeyPair
+    val accessKeyPair: KeyPair
+
+    val refreshKeyPair:KeyPair
 
 }

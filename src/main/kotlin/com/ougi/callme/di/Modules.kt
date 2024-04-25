@@ -5,8 +5,7 @@ import com.ougi.callme.data.repository.JwtConfigRepositoryImpl
 import com.ougi.callme.data.repository.KeyRepositoryImpl
 import com.ougi.callme.domain.repository.JwtConfigRepository
 import com.ougi.callme.domain.repository.KeyRepository
-import com.ougi.callme.domain.usecase.JwtConfigUseCase
-import com.ougi.callme.domain.usecase.JwtConfigUseCaseImpl
+import com.ougi.callme.domain.usecase.*
 import io.ktor.server.application.*
 import io.ktor.server.config.*
 import org.koin.core.module.dsl.bind
@@ -20,7 +19,9 @@ private val repositoriesModule = module {
 }
 
 private val useCasesModule = module {
-    singleOf(::JwtConfigUseCaseImpl) { bind<JwtConfigUseCase>() }
+    singleOf(::GetVerifierUseCaseImpl) { bind<GetVerifierUseCase>() }
+    singleOf(::GenerateTokenPairUseCaseImpl) { bind<GenerateTokenPairUseCase>() }
+    singleOf(::RefreshTokenUseCaseImpl) { bind<RefreshTokenUseCase>() }
 }
 
 fun createEnvironmentModule(applicationConfig: ApplicationConfig) =

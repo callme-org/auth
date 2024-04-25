@@ -9,12 +9,11 @@ class JwtConfigRepositoryImpl(
     private val environmentInfo: EnvironmentInfo,
 ) : JwtConfigRepository {
 
-    override fun getJwtConfig(keyPair: KeyPair): JwtConfig {
+    override fun getJwtConfig(): JwtConfig {
         val environmentPath = "${environmentInfo.host}:${environmentInfo.port}"
 
         return JwtConfig(
             audience = environmentPath,
-            keyPair = keyPair,
             issuer = "$environmentPath/",
         )
     }

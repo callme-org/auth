@@ -1,4 +1,4 @@
-package com.ougi.callme.domain.model
+package com.ougi.callme.presentation.authorization.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

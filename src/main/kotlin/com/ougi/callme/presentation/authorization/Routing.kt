@@ -8,6 +8,7 @@ fun Application.configureRouting() =
         route("/open") {
             route("/auth") {
                 login()
+                refresh()
                 authenticate()
             }
         }
