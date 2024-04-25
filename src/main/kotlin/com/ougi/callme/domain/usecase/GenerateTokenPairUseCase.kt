@@ -61,6 +61,6 @@ class GenerateTokenPairUseCaseImpl(
 
     private companion object {
         private val accessTokenExpiringMillis = TimeUnit.HOURS.toMillis(1)
-        private val refreshTokenExpiringMillis = TimeUnit.DAYS.toMillis(7)
+        private val refreshTokenExpiringMillis = TimeUnit.DAYS.toMillis(30)
     }
 }
