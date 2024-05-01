@@ -1,49 +1,32 @@
 package com.ougi.callme.presentation.authorization
 
-import com.ougi.callme.domain.constant.ParamsConstants.LOGIN_PARAM_NAME
-import com.ougi.callme.domain.usecase.GetVerifierUseCase
+import com.ougi.callme.domain.usecase.VerifyTokenUseCase
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
-import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 
-fun Application.configureAuthentication() {
-    val getVerifierUseCase by inject<GetVerifierUseCase>()
-    val accessTokenVerifier = getVerifierUseCase.getAccessTokenVerifier()
-    authentication {
-        jwt("auth-jwt") {
-            verifier(accessTokenVerifier)
-            validate()
-            challenge()
-        }
+
+fun Route.authenticate() {
+    val verifyTokenUseCase by inject<VerifyTokenUseCase>()
+    get("/authenticate") {
+        call.request
+            .parseAuthorizationHeader()
+            ?.render()
+            ?.let { token -> verifyTokenUseCase.verifyAccessToken(token) }
+            ?.let { isVerified ->
+                if (isVerified) HttpStatusCode.OK to AUTHENTICATED_MESSAGE
+                else HttpStatusCode.Unauthorized to NOT_AUTHENTICATED_MESSAGE
+            }
+            ?.let { (status, message) -> call.respond(status, message) }
+            ?: call.respond(
+                status = HttpStatusCode.Unauthorized,
+                message = NOT_AUTHENTICATED_MESSAGE
+            )
     }
 }
 
-fun Route.authenticate() =
-    authenticate("auth-jwt") {
-        get("/authenticate") {
-            call.respond(
-                status = HttpStatusCode.OK,
-                message = "Authenticated"
-            )
-        }
-    }
-
-private fun JWTAuthenticationProvider.Config.validate() =
-    validate { credential ->
-        if (credential.payload.getClaim(LOGIN_PARAM_NAME).asString() != null)
-            JWTPrincipal(credential.payload)
-        else
-            null
-    }
-
-private fun JWTAuthenticationProvider.Config.challenge() =
-    challenge { _, _ ->
-        call.respond(
-            status = HttpStatusCode.Unauthorized,
-            message = "Token is not valid or has expired"
-        )
-    }
+private const val AUTHENTICATED_MESSAGE = "Authenticated"
+private const val NOT_AUTHENTICATED_MESSAGE = "Token is not valid or has expired"

@@ -2,7 +2,7 @@ package com.ougi.callme.domain.repository
 
 import io.ktor.client.statement.*
 
-interface UserRepository {
+interface DbUserRepository {
 
     suspend fun requestUserLogin(login: String): HttpResponse
 

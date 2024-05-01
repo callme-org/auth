@@ -2,13 +2,12 @@ package com.ougi.callme.domain.model
 
 import io.ktor.http.*
 
-sealed interface UserLoginResponse {
+sealed interface RequestResult {
 
-    data object Accepted : UserLoginResponse
+    class Success(val result: ByteArray) : RequestResult
 
     class Failure(
         val status: HttpStatusCode,
         val message: ByteArray,
-    ) : UserLoginResponse
-
+    ) : RequestResult
 }

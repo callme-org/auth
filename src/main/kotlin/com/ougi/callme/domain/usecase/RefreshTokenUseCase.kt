@@ -1,27 +1,35 @@
 package com.ougi.callme.domain.usecase
 
-import com.ougi.callme.domain.constant.ParamsConstants
-import com.ougi.callme.domain.model.TokenPair
+import com.ougi.callme.domain.model.RequestResult
+import com.ougi.callme.domain.repository.TokenizationRepository
+import io.ktor.client.statement.*
+import io.ktor.http.*
 
 interface RefreshTokenUseCase {
 
-    fun refreshToken(refreshToken: String): TokenPair
+    suspend fun refreshToken(
+        token: String,
+    ): RequestResult
 
 }
 
 class RefreshTokenUseCaseImpl(
-    private val getVerifierUseCase: GetVerifierUseCase,
-    private val generateTokenPairUseCase: GenerateTokenPairUseCase,
+    private val tokenizationRepository: TokenizationRepository,
 ) : RefreshTokenUseCase {
 
-    override fun refreshToken(refreshToken: String): TokenPair {
-        val refreshTokenVerifier = getVerifierUseCase.getRefreshTokenVerifier()
-        val decodedToken = refreshTokenVerifier.verify(refreshToken)
+    override suspend fun refreshToken(token: String) =
+        tokenizationRepository.refreshToken(
+            token = token,
+            claimKey = LOGIN_PARAM_NAME
+        ).let { response ->
+            when (response.status) {
+                HttpStatusCode.OK -> RequestResult.Success(response.readBytes())
+                else -> RequestResult.Failure(response.status, response.readBytes())
+            }
+        }
 
-        return generateTokenPairUseCase.generateTokenPair(
-            login = decodedToken.getClaim(ParamsConstants.LOGIN_PARAM_NAME).asString()
-        )
+
+    private companion object {
+        private const val LOGIN_PARAM_NAME = "login"
     }
-
-
 }
