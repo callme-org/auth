@@ -4,6 +4,6 @@ import io.ktor.client.statement.*
 
 interface DbUserRepository {
 
-    suspend fun requestUserLogin(login: String): HttpResponse
+    suspend fun addUser(login: String): HttpResponse
 
 }

@@ -10,7 +10,7 @@ class DbUserRepositoryImpl(
     private val httpClient: HttpClient
 ) : DbUserRepository {
 
-    override suspend fun requestUserLogin(login: String) =
+    override suspend fun addUser(login: String) =
         httpClient.post("http://callme-user:8080/common/user/create") {
             contentType(ContentType.Application.Json)
             setBody(UserLogin(login))
