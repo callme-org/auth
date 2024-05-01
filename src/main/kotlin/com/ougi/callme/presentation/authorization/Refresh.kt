@@ -16,7 +16,7 @@ fun Route.refresh() {
     post("/refresh") {
         val refreshToken = call.receive<RefreshData>().refreshToken
         when (val response = refreshTokenUseCase.refreshToken(refreshToken)) {
-            is RequestResult.Success -> HttpStatusCode.OK to response.result
+            is RequestResult.Success<*> -> HttpStatusCode.OK to response.result
             is RequestResult.Failure -> response.status to response.message
         }.let { (status, message) -> call.respond(status, message) }
     }

@@ -4,7 +4,7 @@ import io.ktor.http.*
 
 sealed interface RequestResult {
 
-    class Success(val result: ByteArray) : RequestResult
+    class Success<T : Any>(val result: T) : RequestResult
 
     class Failure(
         val status: HttpStatusCode,
