@@ -22,43 +22,67 @@ class AcceptUserLoginUseCaseImpl(
 ) : AcceptUserLoginUseCase {
 
     override fun acceptUserLoginFlow(login: String): Flow<RequestResult> =
-        flow { emit(dbUserRepository.addUser(login)) }
-            .onEach { response ->
-                if (response.status != HttpStatusCode.OK || response.status != HttpStatusCode.Conflict)
-                    throw RequestException(response.status, response.readBytes())
+        addUserFlow(login)
+            .flatMapConcat { result ->
+                when (result) {
+                    is RequestResult.Failure -> flowOf(result)
+                    is RequestResult.Success<*> -> generateTokensFlow(login)
+                }
             }
-            .map {
-                val generateTokenResponse = tokenizationRepository.generateTokenPair(
+            .flatMapConcat { result ->
+                when (result) {
+                    is RequestResult.Failure -> flowOf(result)
+                    is RequestResult.Success<*> -> addTurnUserFlow(
+                        login = login,
+                        password = (result.result as TokenPair).accessToken
+                    ).map { result }
+                }
+            }
+            .take(1)
+
+    private fun addUserFlow(login: String) =
+        flow { emit(dbUserRepository.addUser(login)) }
+            .map { response ->
+                if (response.status != HttpStatusCode.OK || response.status != HttpStatusCode.Conflict)
+                    RequestResult.Success(Unit)
+                else
+                    RequestResult.Failure(response.status, response.readBytes())
+            }
+
+    private fun generateTokensFlow(login: String) =
+        flow {
+            emit(
+                tokenizationRepository.generateTokenPair(
                     claimKey = LOGIN_PARAM_NAME,
                     claimValue = login
                 )
-                if (generateTokenResponse.status == HttpStatusCode.OK)
-                    Json.decodeFromString<TokenPair>(generateTokenResponse.readBytes().decodeToString())
-                else
-                    throw RequestException(generateTokenResponse.status, generateTokenResponse.readBytes())
-            }
-            .onEach { tokens ->
+            )
+        }.map { response ->
+            if (response.status == HttpStatusCode.OK)
+                RequestResult.Success(
+                    Json.decodeFromString<TokenPair>(response.readBytes().decodeToString())
+                )
+            else
+                RequestResult.Failure(response.status, response.readBytes())
+        }
+
+    private fun addTurnUserFlow(
+        login: String,
+        password: String
+    ) =
+        flow {
+            emit(
                 dbTurnUserRepository.addUser(
                     login = login,
-                    token = tokens.accessToken,
+                    password = password,
                 )
-            }
-            .take(1)
-            .map { tokens -> RequestResult.Success(tokens) as RequestResult }
-            .catch { th ->
-                emit(
-                    RequestResult.Failure(
-                        status = (th as? RequestException)?.status ?: HttpStatusCode.BadRequest,
-                        message = (th as? RequestException)?.messageBytes ?: byteArrayOf()
-                    )
-                )
+            )
+        }
+            .map { response ->
+                if (response.status == HttpStatusCode.OK) RequestResult.Success(Unit)
+                else RequestResult.Failure(response.status, response.readBytes())
             }
 
-
-    private class RequestException(
-        val status: HttpStatusCode,
-        val messageBytes: ByteArray
-    ) : Exception(messageBytes.decodeToString())
 
     private companion object {
         private const val LOGIN_PARAM_NAME = "login"

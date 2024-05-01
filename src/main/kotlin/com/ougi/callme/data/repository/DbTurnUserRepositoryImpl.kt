@@ -10,12 +10,12 @@ class DbTurnUserRepositoryImpl(
     private val httpClient: HttpClient,
 ) : DbTurnUserRepository {
 
-    override suspend fun addUser(login: String, token: String): HttpResponse =
+    override suspend fun addUser(login: String, password: String): HttpResponse =
         httpClient.post("http://callme-turn-user:8080/common/turnuser/create") {
             setBody(
                 TurnUserRequest(
                     login = login,
-                    password = token
+                    password = password
                 )
             )
         }

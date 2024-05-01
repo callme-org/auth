@@ -6,6 +6,6 @@ interface DbTurnUserRepository {
 
     suspend fun addUser(
         login: String,
-        token: String,
+        password: String,
     ): HttpResponse
 }
