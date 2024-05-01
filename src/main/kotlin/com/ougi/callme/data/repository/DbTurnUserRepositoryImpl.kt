@@ -5,6 +5,7 @@ import com.ougi.callme.domain.repository.DbTurnUserRepository
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.http.*
 
 class DbTurnUserRepositoryImpl(
     private val httpClient: HttpClient,
@@ -12,6 +13,7 @@ class DbTurnUserRepositoryImpl(
 
     override suspend fun addUser(login: String, password: String): HttpResponse =
         httpClient.post("http://callme-turn-user:8080/common/turnuser/create") {
+            contentType(ContentType.Application.Json)
             setBody(
                 TurnUserRequest(
                     login = login,

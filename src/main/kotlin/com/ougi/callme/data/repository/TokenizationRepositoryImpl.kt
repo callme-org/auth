@@ -7,6 +7,7 @@ import com.ougi.callme.data.model.VerifyTokenRequest
 import com.ougi.callme.domain.repository.TokenizationRepository
 import io.ktor.client.*
 import io.ktor.client.request.*
+import io.ktor.http.*
 
 class TokenizationRepositoryImpl(
     private val httpClient: HttpClient
@@ -17,6 +18,7 @@ class TokenizationRepositoryImpl(
         claimValue: String
     ) =
         httpClient.post(TOKENIZATION_HOST + CREATE_PATH) {
+            contentType(ContentType.Application.Json)
             setBody(
                 CreateTokenRequest(
                     claim = Claim(
@@ -32,6 +34,7 @@ class TokenizationRepositoryImpl(
         claimKey: String,
     ) =
         httpClient.post(TOKENIZATION_HOST + REFRESH_PATH) {
+            contentType(ContentType.Application.Json)
             setBody(
                 RefreshTokenRequest(
                     refreshToken = token,
@@ -43,6 +46,7 @@ class TokenizationRepositoryImpl(
 
     override suspend fun verifyAccessToken(token: String) =
         httpClient.post(TOKENIZATION_HOST + VERIFY_PATH) {
+            contentType(ContentType.Application.Json)
             setBody(VerifyTokenRequest(token))
         }
 
