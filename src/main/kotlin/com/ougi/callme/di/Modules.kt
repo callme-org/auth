@@ -29,7 +29,6 @@ private val repositoriesModule = module {
 private val useCasesModule = module {
     singleOf(::AcceptUserLoginUseCaseImpl) { bind<AcceptUserLoginUseCase>() }
     singleOf(::VerifyTokenUseCaseImpl) { bind<VerifyTokenUseCase>() }
-    singleOf(::GenerateTokenUseCaseImpl) { bind<GenerateTokenUseCase>() }
     singleOf(::RefreshTokenUseCaseImpl) { bind<RefreshTokenUseCase>() }
 }
 
