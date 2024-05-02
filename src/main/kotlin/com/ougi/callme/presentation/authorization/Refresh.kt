@@ -15,9 +15,10 @@ fun Route.refresh() {
     val refreshTokenUseCase by inject<RefreshTokenUseCase>()
     post("/refresh") {
         val refreshToken = call.receive<RefreshData>().refreshToken
-        when (val response = refreshTokenUseCase.refreshToken(refreshToken)) {
-            is RequestResult.Success<*> -> HttpStatusCode.OK to response.result
-            is RequestResult.Failure -> response.status to response.message
-        }.let { (status, message) -> call.respond(status, message) }
+        val refreshResponse = refreshTokenUseCase.refreshToken(refreshToken)
+        when (refreshResponse) {
+            is RequestResult.Success -> HttpStatusCode.OK
+            is RequestResult.Failure -> refreshResponse.status
+        }.let { status -> call.respond(status, refreshResponse.body) }
     }
 }

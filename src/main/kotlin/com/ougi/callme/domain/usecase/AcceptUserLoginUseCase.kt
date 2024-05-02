@@ -5,14 +5,13 @@ import com.ougi.callme.domain.model.TokenPair
 import com.ougi.callme.domain.repository.DbTurnUserRepository
 import com.ougi.callme.domain.repository.DbUserRepository
 import com.ougi.callme.domain.repository.TokenizationRepository
+import io.ktor.client.call.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import kotlinx.coroutines.flow.*
-import kotlinx.serialization.json.Json
 
 interface AcceptUserLoginUseCase {
 
-    fun acceptUserLoginFlow(login: String): Flow<RequestResult>
+    suspend fun acceptUserLogin(login: String): RequestResult
 }
 
 class AcceptUserLoginUseCaseImpl(
@@ -21,68 +20,28 @@ class AcceptUserLoginUseCaseImpl(
     private val tokenizationRepository: TokenizationRepository,
 ) : AcceptUserLoginUseCase {
 
-    override fun acceptUserLoginFlow(login: String): Flow<RequestResult> =
-        addUserFlow(login)
-            .flatMapConcat { result ->
-                when (result) {
-                    is RequestResult.Failure -> flowOf(result)
-                    is RequestResult.Success<*> -> generateTokensFlow(login)
-                }
-            }
-            .flatMapConcat { result ->
-                when (result) {
-                    is RequestResult.Failure -> flowOf(result)
-                    is RequestResult.Success<*> -> addTurnUserFlow(
-                        login = login,
-                        password = (result.result as TokenPair).accessToken
-                    ).map { result }
-                }
-            }
-            .take(1)
+    override suspend fun acceptUserLogin(login: String): RequestResult {
+        val addUserResponse = dbUserRepository.addUser(login)
+        if (!listOf(HttpStatusCode.OK, HttpStatusCode.Conflict).contains(addUserResponse.status))
+            return RequestResult.Failure(addUserResponse.status, addUserResponse.readBytes())
 
-    private fun addUserFlow(login: String) =
-        flow { emit(dbUserRepository.addUser(login)) }
-            .map { response ->
-                if (response.status != HttpStatusCode.OK || response.status != HttpStatusCode.Conflict)
-                    RequestResult.Success(Unit)
-                else
-                    RequestResult.Failure(response.status, response.readBytes())
-            }
+        val generateTokensResponse = tokenizationRepository.generateTokenPair(
+            claimKey = LOGIN_PARAM_NAME,
+            claimValue = login
+        )
+        if (generateTokensResponse.status != HttpStatusCode.OK)
+            return RequestResult.Failure(generateTokensResponse.status, generateTokensResponse.readBytes())
 
-    private fun generateTokensFlow(login: String) =
-        flow {
-            emit(
-                tokenizationRepository.generateTokenPair(
-                    claimKey = LOGIN_PARAM_NAME,
-                    claimValue = login
-                )
-            )
-        }.map { response ->
-            if (response.status == HttpStatusCode.OK)
-                RequestResult.Success(
-                    Json.decodeFromString<TokenPair>(response.readBytes().decodeToString())
-                )
-            else
-                RequestResult.Failure(response.status, response.readBytes())
-        }
+        val addTurnUserResponse = dbTurnUserRepository.addUser(
+            login = login,
+            password = generateTokensResponse.body<TokenPair>().accessToken,
+        )
 
-    private fun addTurnUserFlow(
-        login: String,
-        password: String
-    ) =
-        flow {
-            emit(
-                dbTurnUserRepository.addUser(
-                    login = login,
-                    password = password,
-                )
-            )
-        }
-            .map { response ->
-                if (response.status == HttpStatusCode.OK) RequestResult.Success(Unit)
-                else RequestResult.Failure(response.status, response.readBytes())
-            }
-
+        return if (addTurnUserResponse.status == HttpStatusCode.OK)
+            RequestResult.Success(generateTokensResponse.readBytes())
+        else
+            RequestResult.Failure(addTurnUserResponse.status, addTurnUserResponse.readBytes())
+    }
 
     private companion object {
         private const val LOGIN_PARAM_NAME = "login"

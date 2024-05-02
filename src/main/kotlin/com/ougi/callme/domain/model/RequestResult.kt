@@ -2,12 +2,14 @@ package com.ougi.callme.domain.model
 
 import io.ktor.http.*
 
-sealed interface RequestResult {
+sealed class RequestResult(
+    open val body: ByteArray
+) {
 
-    class Success<T : Any>(val result: T) : RequestResult
+    class Success(override val body: ByteArray) : RequestResult(body)
 
     class Failure(
         val status: HttpStatusCode,
-        val message: ByteArray,
-    ) : RequestResult
+        override val body: ByteArray,
+    ) : RequestResult(body)
 }

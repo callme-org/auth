@@ -8,8 +8,6 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import org.koin.ktor.ext.inject
 import java.security.MessageDigest
 
@@ -28,15 +26,11 @@ fun Route.login() {
             )
             return@post
         }
-
-        acceptUserLoginUseCase.acceptUserLoginFlow(userAuthData.loginMd5)
-            .onEach { result ->
-                when (result) {
-                    is RequestResult.Failure -> result.status to result.message
-                    is RequestResult.Success<*> -> HttpStatusCode.OK to result.result
-                }.let { (status, message) -> call.respond(status, message) }
-            }
-            .launchIn(this)
+        val acceptLoginResult = acceptUserLoginUseCase.acceptUserLogin(userAuthData.loginMd5)
+        when (acceptLoginResult) {
+            is RequestResult.Success -> HttpStatusCode.OK
+            is RequestResult.Failure -> acceptLoginResult.status
+        }.let { status -> call.respond(status, acceptLoginResult.body) }
     }
 }
 
