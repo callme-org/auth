@@ -15,6 +15,8 @@ fun Route.authenticate() {
         call.request
             .parseAuthorizationHeader()
             ?.render()
+            ?.split(" ")
+            ?.get(1)
             ?.let { token -> verifyTokenUseCase.verifyAccessToken(token) }
             ?.let { isVerified ->
                 if (isVerified) HttpStatusCode.OK to AUTHENTICATED_MESSAGE
